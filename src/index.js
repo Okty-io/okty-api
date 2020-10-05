@@ -10,7 +10,13 @@ exports.handle = async (event) => {
         return buildResponse({ error: 'Request does not contain a valid JSON' }, 400)
     }
 
-    return buildResponse({ count: containerConfigs.length, version: 4, foo: 'bar' }, 200)
+    console.log(containerConfigs);
+
+    return buildResponse({
+        output: 'http://test.com/asdf',
+        version: process.env.AWS_LAMBDA_FUNCTION_VERSION,
+        foo: 'bar'
+    }, 200)
 }
 
 function buildResponse(data, status, headers = []) {

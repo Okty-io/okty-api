@@ -8,6 +8,22 @@ Resources:
             Name: Okty Frontend Gateway
             StageName: Prod
 
+    BuilderRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -   Effect: Allow
+                        Principal:
+                            Service:
+                                - lambda.amazonaws.com
+                        Action:
+                            - 'sts:AssumeRole'
+            Path: /
+            RoleName: OktyBuilderRole
+            Description: Role used by the builder lambda
+
     BuilderFunction:
         Type: AWS::Serverless::Function
         Properties:
@@ -16,13 +32,46 @@ Resources:
             Runtime: nodejs12.x
             MemorySize: 128
             Timeout: 10
+            Role: !GetAtt BuilderRole.Arn
+            AutoPublishAlias: prod
+            DeploymentPreference:
+                Type: AllAtOnce
+                Hooks:
+                    PreTraffic: !Ref BuilderFunctionPreTraffic
             Events:
                 Api:
                     Type: Api
                     Properties:
                         RestApiId: !Ref ApiGateway
                         Path: /build
-                        Method: POST
+                        Method: GET
+
+    BuilderFunctionPreTraffic:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: index.handler
+            CodeUri: hooks/pre_traffic
+            Policies:
+                -   Version: "2012-10-17"
+                    Statement:
+                        -   Effect: "Allow"
+                            Action:
+                                - "codedeploy:PutLifecycleEventHookExecutionStatus"
+                            Resource: !Sub 'arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentgroup:${ServerlessDeploymentApplication}/*'
+                -   Version: "2012-10-17"
+                    Statement:
+                        -   Effect: "Allow"
+                            Action:
+                                - "lambda:InvokeFunction"
+                            Resource: !Ref BuilderFunction.Version
+            Runtime: nodejs12.x
+            FunctionName: 'CodeDeployHook_BuilderFunctionPreTraffic'
+            DeploymentPreference:
+                Enabled: false
+            Timeout: 30
+            Environment:
+                Variables:
+                    NewVersion: !Ref BuilderFunction.Version
 
 Outputs:
     WebEndpoint:

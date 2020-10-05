@@ -1,11 +1,7 @@
 exports.handle = async (event) => {
-
     console.log('### Invoked');
     console.log(event);
 
-    return buildResponse({version: 3}, 200);
-
-    /*
     let containerConfigs = [];
 
     try {
@@ -14,8 +10,7 @@ exports.handle = async (event) => {
         return buildResponse({ error: 'Request does not contain a valid JSON' }, 400)
     }
 
-    return buildResponse({ count: containerConfigs.length, foo: 'bar' }, 200)
-     */
+    return buildResponse({ count: containerConfigs.length, version: 4, foo: 'bar' }, 200)
 }
 
 function buildResponse(data, status, headers = []) {

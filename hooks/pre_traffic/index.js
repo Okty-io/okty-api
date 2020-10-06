@@ -3,18 +3,15 @@ const codedeploy = new AWS.CodeDeploy({ apiVersion: '2014-10-06' });
 const lambda = new AWS.Lambda();
 
 exports.handler = (event, context, callback) => {
-    console.log("Entering PreTraffic Hook!");
-
     const deploymentId = event.DeploymentId;
     const lifecycleEventHookExecutionId = event.LifecycleEventHookExecutionId;
 
     const functionToTest = process.env.NewVersion;
-    console.log("BeforeAllowTraffic hook tests started");
     console.log("Testing new function version: " + functionToTest);
 
     const lambdaParams = {
         FunctionName: functionToTest,
-        Payload: "{\"option\": \"time\"}",
+        Payload: JSON.stringify({ body: { test: true } }),
         InvocationType: "RequestResponse"
     };
 

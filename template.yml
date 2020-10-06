@@ -8,22 +8,6 @@ Resources:
             Name: Okty Frontend Gateway
             StageName: Prod
 
-    BuilderRole:
-        Type: AWS::IAM::Role
-        Properties:
-            AssumeRolePolicyDocument:
-                Version: '2012-10-17'
-                Statement:
-                    -   Effect: Allow
-                        Principal:
-                            Service:
-                                - lambda.amazonaws.com
-                        Action:
-                            - 'sts:AssumeRole'
-            Path: /
-            RoleName: OktyBuilderRole
-            Description: Role used by the builder lambda
-
     BuilderFunction:
         Type: AWS::Serverless::Function
         Properties:
@@ -32,7 +16,6 @@ Resources:
             Runtime: nodejs12.x
             MemorySize: 128
             Timeout: 10
-            Role: !GetAtt BuilderRole.Arn
             AutoPublishAlias: prod
             DeploymentPreference:
                 Type: AllAtOnce
@@ -44,7 +27,7 @@ Resources:
                     Properties:
                         RestApiId: !Ref ApiGateway
                         Path: /build
-                        Method: GET
+                        Method: POST
 
     BuilderFunctionPreTraffic:
         Type: AWS::Serverless::Function

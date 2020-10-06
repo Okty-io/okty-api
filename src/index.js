@@ -1,25 +1,18 @@
 exports.handle = async (event) => {
-    console.log('### Invoked');
-    console.log(event);
+    console.log(event.body);
 
-    let containerConfigs = [];
-
-    try {
-        containerConfigs = JSON.parse(event.body);
-    } catch (e) {
-        return buildResponse({ error: 'Request does not contain a valid JSON' }, 400)
-    }
-
-    console.log(containerConfigs);
+    // TODO Generate everything
+    // TODO Zip files
+    // TODO Upload to S3
+    // TODO Generation pre-signed url and return it
 
     return buildResponse({
         output: 'http://test.com/asdf',
-        version: process.env.AWS_LAMBDA_FUNCTION_VERSION,
-        foo: 'bar'
+        version: process.env.AWS_LAMBDA_FUNCTION_VERSION
     }, 200)
 }
 
-function buildResponse(data, status, headers = []) {
+function buildResponse(data, status) {
     return {
         statusCode: status,
         body: JSON.stringify(data),

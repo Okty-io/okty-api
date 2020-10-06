@@ -13,6 +13,6 @@ RUN mkdir /app
 
 WORKDIR /app
 
-EXPOSE 3001
+EXPOSE 3000
 
-ENTRYPOINT ["/usr/local/bin/sam", "local", "start-api", "--port", "3001"]
+ENTRYPOINT ["/usr/local/bin/sam", "local", "start-api", "--port", "3000"]
